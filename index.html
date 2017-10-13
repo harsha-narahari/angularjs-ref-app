@@ -1,0 +1,64 @@
+<!doctype HTML>
+<html>
+	<body>
+
+		<div ng-app='myapp'>
+			<div ng-controller='outercontroller'>
+				<div my-dir1></div>
+				id {{id}} <br /><br />
+				name {{name}} <br /><br />
+				<div ng-controller='innercontroller'>
+					<button ng-click="ShowMessage();">click here</button> <br /><br />					
+				</div>				
+				{{message}} <br /><br />		
+				<h1>User "{{name}}" drives a {{car.colour}} coloured {{car.model}} manufatured by {{car.manufacturer}} ... </h1>				
+				<my-dir2 user-name="{{name}}" user-car="{{car}}"></my-dir2>
+			</div>
+			
+			
+		</div>
+
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+		<script>
+			var myapp = angular.module('myapp', []);
+			myapp.controller('outercontroller', function($scope){
+				$scope.id=1; 
+				$scope.name='abc';
+				$scope.car = {model:"camry",manufacturer:"toyota", colour:"grey" };
+				$scope.setMessage = function(msg){
+					$scope.message = msg;
+				}
+			});
+			
+			//To access outer change controller's scope property, expose setter method in outer scope 
+			myapp.controller('innercontroller', function($scope){				
+				$scope.ShowMessage= function(){
+					$scope.setMessage("Name is \"" + $scope.name + "\". Welcome to test app.");
+				}				
+			});
+
+			//directives must be camel case
+			myapp.directive("myDir1", function(){
+				return {
+					
+					restrict: "A",
+					template: "<h1>Hi {{name}}!</h1>"
+				};
+			});
+			
+			myapp.directive("myDir2", function(){
+				return {					
+					restrict: "AE",
+					template: "<h3>User {{dirName}} drives a {{dirCar.colour}} coloured {{dirCar.model}} manufatured by {{dirCar.manufacturer}} ... </h3>",
+					scope:{dirName:"@userName", dirCar:"@userCar"},
+					link:function(scope, element, attribute){
+						//scope.dirName = "Mr " + scope.dirName;
+						
+					}
+				};
+			});
+		</script>
+
+	</body>
+</html>
